@@ -10,7 +10,7 @@ from tkinter.messagebox import *
 
 
 def getPidByName(Str):
-    #根据程序名获取所有pid
+    # 根据程序名获取所有pid
     pids = pt.process_iter()
     pidList = []
     for pid in pids:
@@ -40,6 +40,7 @@ class LoginPage(Frame):
         self.createForm()
 
     def createForm(self):
+        # 创建窗口
         Label(self).grid(row=0, stick=W, pady=10)
         Label(self, text='软件名称: ').grid(row=1, stick=W, pady=10)  # 360Game.exe
         Entry(self, textvariable=self.soft_name).grid(row=1, column=1, stick=E)
@@ -52,23 +53,24 @@ class LoginPage(Frame):
 
     def loginCheck(self):
         try:
+            count = 0
             soft_name = self.soft_name.get()
             time_set = int(self.time_set.get())
         except:
-            showinfo(title='错误', message='请输入软件名和时间！')
+            showwarning(title='错误', message='请输入软件名和时间')
         else:
-            pid = getPidByName(soft_name)
-            if pid ==[]:
-                showinfo(title='错误', message='%s未启动' % soft_name)
-                return 0
-            count = 0
-            while (count < time_set):
-                time.sleep(1)  # sleep 1 second
-                count += 1
-            for i in pid:
-                kill(i)
-            showinfo(title='成功', message='%s已停止！' % soft_name)
-            self.destroy()
+            while True:
+                pid = getPidByName(soft_name)
+                if pid != []:
+                    while (count < time_set):
+                        time.sleep(1)  # sleep 1 second
+                        count += 1
+                        pid = getPidByName(soft_name)
+                    else:
+                        for i in pid:
+                            kill(i)
+                        showinfo(title='成功', message='%s已停止！' % soft_name)
+                        self.destroy()
 
 
 def main():
@@ -76,11 +78,12 @@ def main():
     root.title('软件计时管理系统')
     width = 280
     height = 200
+    # 居中对齐
     screenwidth = root.winfo_screenwidth()
     screenheight = root.winfo_screenheight()
     alignstr = '%dx%d+%d+%d' % (width, height,
                                 (screenwidth-width)/2, (screenheight-height)/2)
-    root.geometry(alignstr)    # 居中对齐
+    root.geometry(alignstr)
     page = LoginPage()
     root.mainloop()
 
